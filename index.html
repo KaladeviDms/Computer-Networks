@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Application Layer — EXE HTML5 Module</title>
+  <style>
+    :root{--bg:#f7f8fb;--card:#fff;--accent:#0b69ff;--muted:#666}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;line-height:1.5;background:var(--bg);color:#111;margin:0;padding:20px}
+    .wrap{max-width:980px;margin:18px auto}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;font-size:22px}
+    .card{background:var(--card);border-radius:12px;padding:16px;margin-top:16px;box-shadow:0 6px 20px rgba(20,30,60,0.06)}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:16px}
+    .small{font-size:13px;color:var(--muted)}
+    .btn{display:inline-block;padding:8px 12px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none}
+    .kbd{background:#eef;padding:4px 8px;border-radius:6px;font-family:monospace}
+    .dropzone{min-height:70px;border:2px dashed #ddd;border-radius:8px;padding:10px}
+    .list-item{background:#fbfbff;padding:10px;border-radius:8px;margin:6px 0;cursor:grab}
+    .flex{display:flex;gap:8px;align-items:center}
+    .code{font-family:monospace;background:#0f1724;color:#dbeafe;padding:12px;border-radius:8px;overflow:auto}
+    .right{background:#fff;padding:12px;border-radius:8px}
+    .result{padding:8px;margin-top:8px;border-radius:6px}
+    .correct{background:#e6ffef;border:1px solid #7ee08a}
+    .wrong{background:#fff1f0;border:1px solid #ff9b9b}
+    .editor{min-height:140px;border-radius:8px;padding:10px;background:#0b1220;color:#e6eef9;font-family:monospace}
+    .hidden{display:none}
+    footer{font-size:13px;color:var(--muted);margin-top:18px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect rx='8' width='48' height='48' fill='%230b69ff'/><text x='50%' y='55%' font-size='22' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'>AL</text></svg>" alt="logo"/>
+      <div>
+        <h1>Application Layer — Interactive HTML5 EXE Module</h1>
+        <div class="small">Unit designed for Computer Networks — activities, games, code panels, and mini-projects</div>
+      </div>
+    </header>
+
+    <div class="card">
+      <strong>Topics:</strong> DNS, HTTP/HTTPS, SMTP/POP3/IMAP, FTP, DHCP, SNMP — with interactive activities and assessment.
+    </div>
+
+    <div class="grid">
+      <main>
+
+        <!-- Introduction -->
+        <section class="card" id="intro">
+          <h2>1. Introduction — What is the Application Layer?</h2>
+          <p>The Application Layer provides services directly to user applications: web browsing, email, name resolution, file transfer, and network management. It sits at the top of the TCP/IP stack.</p>
+          <p class="small">Learning objectives: identify protocols, trace request/response flows, configure basic requests, and debug common problems.</p>
+        </section>
+
+        <!-- DNS Activity -->
+        <section class="card" id="dns">
+          <h2>2. DNS — Name to Address</h2>
+          <p class="small">Activity: Order the steps in DNS resolution (drag & drop)</p>
+
+          <div id="dns-steps" style="display:flex;gap:12px;flex-wrap:wrap">
+            <div class="dropzone" id="dns-target">Drop steps here in order</div>
+            <div style="flex:1;min-width:220px">
+              <div class="list-item" draggable="true">Query to Resolver (recursive)</div>
+              <div class="list-item" draggable="true">Resolver asks Root server</div>
+              <div class="list-item" draggable="true">Root refers to TLD</div>
+              <div class="list-item" draggable="true">TLD refers to Authoritative server</div>
+              <div class="list-item" draggable="true">Authoritative returns A record (IP)</div>
+              <div class="list-item" draggable="true">Resolver returns IP to client</div>
+            </div>
+          </div>
+          <button class="btn" onclick="checkDNS()">Check Order</button>
+          <div id="dns-result" class="result hidden"></div>
+        </section>
+
+        <!-- HTTP Activity -->
+        <section class="card" id="http">
+          <h2>3. HTTP / HTTPS — Requests & Methods</h2>
+          <p class="small">Activity: Identify method type and edit a sample request</p>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="flex:1">
+              <pre class="code">GET /index.html HTTP/1.1
+Host: example.com
+
+POST /login HTTP/1.1
+Host: example.com
+Content-Length: 32
+</pre>
+              <p class="small">Select the method for each sample above.</p>
+              <div style="display:flex;gap:8px">
+                <button class="btn" onclick="toast('GET selected')">GET</button>
+                <button class="btn" onclick="toast('POST selected')">POST</button>
+                <button class="btn" onclick="toast('PUT selected')">PUT</button>
+                <button class="btn" onclick="toast('DELETE selected')">DELETE</button>
+              </div>
+            </div>
+            <aside class="right">
+              <h4 class="small">Mini Editor — Edit HTTP header</h4>
+              <div contenteditable="true" id="http-editor" class="editor">GET /index.html HTTP/1.1
+Host: example.com
+User-Agent: EXE-Student
+Accept-Language: en-US
+</div>
+              <button class="btn" style="margin-top:8px" onclick="validateHTTP()">Validate Header</button>
+              <div id="http-res" class="result hidden"></div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- Email protocols -->
+        <section class="card" id="email">
+          <h2>4. SMTP / POP3 / IMAP — Email Flow</h2>
+          <p class="small">Drag the correct protocol to the action</p>
+          <div style="display:flex;gap:12px">
+            <div style="flex:1">
+              <div class="dropzone" id="email-drop"></div>
+            </div>
+            <div style="width:260px">
+              <div class="list-item" draggable="true">SMTP</div>
+              <div class="list-item" draggable="true">POP3</div>
+              <div class="list-item" draggable="true">IMAP</div>
+              <div style="margin-top:10px;" class="small">Actions to match:</div>
+              <ol class="small">
+                <li>Send mail from client to outgoing mail server</li>
+                <li>Download and delete mail from server to local device</li>
+                <li>Sync mail across devices keeping server copy</li>
+              </ol>
+            </div>
+          </div>
+          <button class="btn" onclick="checkEmailMatch()">Check Matches</button>
+          <div id="email-res" class="result hidden"></div>
+        </section>
+
+        <!-- FTP -->
+        <section class="card" id="ftp">
+          <h2>5. FTP — Control & Data Channels</h2>
+          <p class="small">Game: Choose Active or Passive for each scenario</p>
+          <div>
+            <p><strong>Scenario A</strong>: Client behind NAT connects to public FTP server and only client initiates connections. <select id="ftp-a"><option value="">--choose--</option><option>Active</option><option>Passive</option></select></p>
+            <p><strong>Scenario B</strong>: Server initiates data connection to client port 20. <select id="ftp-b"><option value="">--choose--</option><option>Active</option><option>Passive</option></select></p>
+            <button class="btn" onclick="checkFTP()">Submit Answers</button>
+            <div id="ftp-res" class="result hidden"></div>
+          </div>
+        </section>
+
+        <!-- DHCP -->
+        <section class="card" id="dhcp">
+          <h2>6. DHCP — DORA</h2>
+          <p class="small">Activity: Select which packet is which</p>
+          <div>
+            <p><label><input type="radio" name="dora" value="discover"> DHCP Discover — client broadcasts to find server</label></p>
+            <p><label><input type="radio" name="dora" value="offer"> DHCP Offer — server offers IP</label></p>
+            <p><label><input type="radio" name="dora" value="request"> DHCP Request — client asks for offered IP</label></p>
+            <p><label><input type="radio" name="dora" value="ack"> DHCP ACK — server confirms lease</label></p>
+            <button class="btn" onclick="checkDORA()">Check DORA</button>
+            <div id="dora-res" class="result hidden"></div>
+          </div>
+        </section>
+
+        <!-- SNMP -->
+        <section class="card" id="snmp">
+          <h2>7. SNMP — Manager & Agent</h2>
+          <p class="small">Mini activity: Click the OID that corresponds to Interface status</p>
+          <div style="display:flex;gap:8px">
+            <button class="btn" onclick="snmpPick('1.3.6.1.2.1.2.2.1.8')">1.3.6.1.2.1.2.2.1.8</button>
+            <button class="btn" onclick="snmpPick('1.3.6.1.2.1.25.3.3.1.2')">1.3.6.1.2.1.25.3.3.1.2</button>
+            <button class="btn" onclick="snmpPick('1.3.6.1.2.1.1.3.0')">1.3.6.1.2.1.1.3.0</button>
+          </div>
+          <div id="snmp-res" class="result hidden"></div>
+        </section>
+
+        <!-- End of unit game-based assessment -->
+        <section class="card" id="assessment">
+          <h2>8. End-of-Unit — Game Assessment</h2>
+          <p class="small">3 quick games: Timeline Sorting, Protocol Race, Debug Packet</p>
+          <button class="btn" onclick="startProtocolRace()">Start Protocol Race (timer)</button>
+          <div id="race-area" class="hidden" style="margin-top:10px">
+            <p>Click the correct protocol for each scenario (3 items)</p>
+            <div id="race-items"></div>
+            <div id="race-res" class="result hidden"></div>
+          </div>
+        </section>
+
+        <!-- Mini project -->
+        <section class="card" id="project">
+          <h2>9. Mini-Project — Choose one</h2>
+          <ul>
+            <li>DNS Resolution Explorer: Trace DNS for 5 websites and make a table showing resolver, root, TLD, authoritative, IP.</li>
+            <li>Email Simulation: Use Packet Tracer to show SMTP flow and retrieval using POP3/IMAP.</li>
+            <li>HTTP Header Analyzer: Capture and explain GET/POST headers from 5 sites.</li>
+            <li>FTP Upload Simulation: Simulate active and passive FTP and record packet flows.</li>
+          </ul>
+          <p class="small">Deliverable: single PDF report + screenshots + short demo video (2–3 minutes) OR a ZIP with capture files.</p>
+        </section>
+
+      </main>
+
+      <aside>
+        <div class="card">
+          <h3>Quick Reference</h3>
+          <ul class="small">
+            <li>DNS — port 53, resolves names to IP</li>
+            <li>HTTP — port 80 (GET/POST/PUT/DELETE)</li>
+            <li>HTTPS — port 443, TLS</li>
+            <li>SMTP — port 25 (send)</li>
+            <li>POP3 — port 110 (download), IMAP — port 143 (sync)</li>
+            <li>FTP — ports 20/21 (data/control)</li>
+            <li>DHCP — UDP 67/68 (DORA)</li>
+            <li>SNMP — UDP 161/162 (Manager/Trap)</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Rubric (Suggested)</h3>
+          <p class="small">Activities: 30 marks | Mini-project: 40 marks | Quiz & viva: 30 marks</p>
+        </div>
+
+        <div class="card">
+          <h3>Teacher Notes</h3>
+          <p class="small">Use Packet Tracer for labs, Wireshark for captures, and require students to submit both practical configs and short reflection statements.</p>
+        </div>
+
+      </aside>
+    </div>
+
+    <footer>
+      Module generated: HTML5 EXE — paste into your EXE editor or serve as standalone file. Feel free to ask for a zipped package or additional assets (images/diagrams) integrated into this file.
+    </footer>
+  </div>
+
+  <script>
+    // Small interactive logic
+    function toast(t){alert(t)}
+
+    // Drag and drop generic
+    document.querySelectorAll('.list-item').forEach(item=>{
+      item.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',e.target.textContent)})
+    })
+    function allowDrop(ev){ev.preventDefault()}
+    document.querySelectorAll('.dropzone').forEach(d=>{
+      d.addEventListener('dragover',allowDrop)
+      d.addEventListener('drop',e=>{
+        e.preventDefault()
+        const text=e.dataTransfer.getData('text/plain')
+        const node=document.createElement('div')
+        node.className='list-item'
+        node.textContent=text
+        d.appendChild(node)
+      })
+    })
+
+    // DNS check — simple ordered check
+    function checkDNS(){
+      const target=document.getElementById('dns-target')
+      const items=Array.from(target.querySelectorAll('.list-item')).map(n=>n.textContent.trim())
+      const correct=[
+        'Query to Resolver (recursive)',
+        'Resolver asks Root server',
+        'Root refers to TLD',
+        'TLD refers to Authoritative server',
+        'Authoritative returns A record (IP)',
+        'Resolver returns IP to client'
+      ]
+      const res=document.getElementById('dns-result')
+      if(items.length!==correct.length){res.className='result wrong';res.textContent='Drop all 6 steps in order.';res.classList.remove('hidden');return}
+      const ok=items.every((v,i)=>v===correct[i])
+      res.className='result '+(ok? 'correct':'wrong')
+      res.textContent= ok? 'Correct order — well done!':'Order incorrect. Try matching each step to the canonical flow.'
+      res.classList.remove('hidden')
+    }
+
+    // HTTP validate
+    function validateHTTP(){
+      const txt=document.getElementById('http-editor').textContent
+      const res=document.getElementById('http-res')
+      if(!/Host:/i.test(txt)) {res.className='result wrong';res.textContent='Host header missing.';res.classList.remove('hidden');return}
+      if(!/^GET|POST/m.test(txt)) {res.className='result wrong';res.textContent='No method detected.';res.classList.remove('hidden');return}
+      res.className='result correct';res.textContent='Header looks valid (basic checks passed).'
+      res.classList.remove('hidden')
+    }
+
+    // Email match checker
+    function checkEmailMatch(){
+      // simple heuristic: check email-drop children order
+      const drop=document.getElementById('email-drop')
+      const children=Array.from(drop.querySelectorAll('.list-item')).map(n=>n.textContent.trim())
+      const mapping=['SMTP','POP3','IMAP']
+      const res=document.getElementById('email-res')
+      if(children.length<3){res.className='result wrong';res.textContent='Place all three protocols into the drop area in the order of actions listed on the right.';res.classList.remove('hidden');return}
+      const ok=children.every((v,i)=>v.includes(mapping[i]))
+      res.className='result '+(ok?'correct':'wrong')
+      res.textContent=ok? 'Matches are correct.':'Matches incorrect — remember SMTP sends, POP3 downloads & IMAP syncs.'
+      res.classList.remove('hidden')
+    }
+
+    // FTP check
+    function checkFTP(){
+      const a=document.getElementById('ftp-a').value
+      const b=document.getElementById('ftp-b').value
+      const res=document.getElementById('ftp-res')
+      if(!a||!b){res.className='result wrong';res.textContent='Answer both scenarios.';res.classList.remove('hidden');return}
+      const ok=(a==='Passive' && b==='Active')
+      res.className='result '+(ok?'correct':'wrong')
+      res.textContent= ok? 'Correct — NAT clients usually use Passive. Scenario B describes Active.' : 'Check your choices: Passive is used behind NAT; Active has server connecting back to client.'
+      res.classList.remove('hidden')
+    }
+
+    // DORA check
+    function checkDORA(){
+      const radios=document.getElementsByName('dora')
+      let selected
+      for(const r of radios) if(r.checked) selected=r.value
+      const res=document.getElementById('dora-res')
+      if(!selected){res.className='result wrong';res.textContent='Select one packet type first.';res.classList.remove('hidden');return}
+      res.className='result correct';res.textContent='Good — you selected: '+selected
+      res.classList.remove('hidden')
+    }
+
+    // SNMP pick
+    function snmpPick(oid){
+      const res=document.getElementById('snmp-res')
+      if(oid==='1.3.6.1.2.1.2.2.1.8'){
+        res.className='result correct';res.textContent='Correct — .1.8 maps to ifOperStatus (interface status).'
+      } else {
+        res.className='result wrong';res.textContent='Not correct for interface status. Try the other OID.'
+      }
+      res.classList.remove('hidden')
+    }
+
+    // Protocol race
+    const raceScenarios=[
+      {q:'Which protocol resolves hostnames to IPs?', a:'DNS'},
+      {q:'Which protocol sends mail from client to mail server?', a:'SMTP'},
+      {q:'Which protocol retrieves mail and keeps server copy for multiple devices?', a:'IMAP'}
+    ]
+    function startProtocolRace(){
+      document.getElementById('race-area').classList.remove('hidden')
+      const container=document.getElementById('race-items')
+      container.innerHTML=''
+      raceScenarios.forEach((it,idx)=>{
+        const div=document.createElement('div')
+        div.style.margin='8px 0'
+        div.innerHTML=`<div><strong>Q${idx+1}</strong> ${it.q}</div><div style='margin-top:6px'><button class='btn' onclick="raceAnswer(${idx},'DNS')">DNS</button> <button class='btn' onclick="raceAnswer(${idx},'SMTP')">SMTP</button> <button class='btn' onclick="raceAnswer(${idx},'IMAP')">IMAP</button> <button class='btn' onclick="raceAnswer(${idx},'FTP')">FTP</button></div>`
+        container.appendChild(div)
+      })
+      document.getElementById('race-res').classList.add('hidden')
+    }
+    const raceUserAnswers=[]
+    function raceAnswer(i,choice){
+      raceUserAnswers[i]=choice
+      if(raceUserAnswers.filter(Boolean).length===raceScenarios.length){
+        let score=0
+        raceScenarios.forEach((it,idx)=>{ if(raceUserAnswers[idx]===it.a) score++ })
+        const res=document.getElementById('race-res')
+        res.className='result '+(score===raceScenarios.length?'correct':'wrong')
+        res.textContent=`You scored ${score}/${raceScenarios.length}`
+        res.classList.remove('hidden')
+      }
+    }
+
+  </script>
+</body>
+</html>
